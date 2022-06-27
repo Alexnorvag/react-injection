@@ -1,0 +1,3 @@
+export const useInjection = () => {
+  return {};
+};
