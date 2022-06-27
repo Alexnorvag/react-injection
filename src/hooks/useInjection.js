@@ -4,7 +4,7 @@ import { render } from "react-dom";
 import { createWrapper, getElements } from "../utils/html";
 
 const defaultInjectionOptions = (options) => ({
-  parentClass: null,
+  parentClass: "",
   wrapperClass: "injected",
   component: null,
   multi: false,
