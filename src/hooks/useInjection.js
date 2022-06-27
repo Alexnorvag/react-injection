@@ -3,7 +3,16 @@ import { render } from "react-dom";
 
 import { createWrapper, getElements } from "../utils/html";
 
-export const useInjection = ({ parentClass, wrapperClass, component }) => {
+const defaultInjectionOptions = (options) => ({
+  parentClass: null,
+  wrapperClass: "injected",
+  component: null,
+  multi: false,
+  ...options,
+});
+
+export const useInjection = (userOptions) => {
+  const options = defaultInjectionOptions(userOptions);
   const injectionContainers = useRef();
 
   const injectComponent = useCallback(
@@ -35,21 +44,21 @@ export const useInjection = ({ parentClass, wrapperClass, component }) => {
   }, []);
 
   useLayoutEffect(() => {
-    injectionContainers.current = getElements(parentClass);
+    injectionContainers.current = getElements(options.parentClass);
 
     const { containers, extracted } = injectComponent({
       containers: injectionContainers.current,
-      wrapperClass,
-      component,
+      wrapperClass: options.wrapperClass,
+      component: options.component,
     });
 
     return () => {
-      if (extracted) {
+      if (extracted && !options.multi) {
         cleanupInjection({
           containers,
-          wrapperClass,
+          wrapperClass: options.wrapperClass,
         });
       }
     };
-  }, [component, parentClass, wrapperClass, cleanupInjection, injectComponent]);
+  }, [options, cleanupInjection, injectComponent]);
 };

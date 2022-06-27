@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useState } from "react";
-
 import { MainLayout } from "./layout/main";
 import { Card } from "./components/card";
 import { useInjection } from "./hooks/useInjection";
 import { isElementInjected } from "./utils/html";
 import { Injection } from "./components/injection";
+import { useClickSomewhere } from "./hooks/useClickSomewhere";
 
 const cards = [
   {
@@ -27,31 +26,19 @@ const cards = [
 const injectedClassName = "injected-wrapper";
 
 function App() {
-  const [parentClass, setParentClass] = useState();
+  const handleClickSomewhere = (target) =>
+    isElementInjected(target, injectedClassName);
+
+  const { parentClass } = useClickSomewhere({
+    onClick: handleClickSomewhere,
+  });
 
   useInjection({
     parentClass: parentClass,
     wrapperClass: injectedClassName,
     component: <Injection />,
+    multi: false,
   });
-
-  const handleClickSomewhere = useCallback((event) => {
-    const { className } = event.target;
-
-    if (isElementInjected(event.target, injectedClassName)) {
-      return;
-    }
-
-    setParentClass(className);
-  }, []);
-
-  useEffect(() => {
-    window.addEventListener("click", handleClickSomewhere);
-
-    return () => {
-      window.removeEventListener("click", handleClickSomewhere);
-    };
-  }, [handleClickSomewhere]);
 
   return (
     <MainLayout>
